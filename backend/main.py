@@ -15,7 +15,6 @@ def analyze(data: dict):
     lon = data["lon"]
 
     result = analyze_area(lat, lon)
-
     return result
 
 @app.get("/dashboard-data")

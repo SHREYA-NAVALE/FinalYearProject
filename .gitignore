@@ -3,21 +3,19 @@ venv/
 __pycache__/
 *.pyc
 
-# Environment
+# Env files
 .env
-
-# Streamlit
-.streamlit/
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# VS Code
-.vscode/
+# Large files (IMPORTANT for you)
+*.tif
+*.tiff
 
-# Database
-*.sql
+# Results folder
+results/
 
 # Logs
 *.log

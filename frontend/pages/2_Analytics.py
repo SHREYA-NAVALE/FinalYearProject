@@ -44,26 +44,45 @@ if "analysis_result" not in st.session_state:
 import requests
 from io import BytesIO
 
+import base64
+from io import BytesIO
+import requests
+import rasterio
+import numpy as np
+from PIL import Image
+import streamlit as st
+
 def load_image(source):
     try:
-        # ✅ Case 1: URL image
-        if str(source).startswith("http"):
+        # ✅ Case 1: Base64 image (NEW 🔥)
+        if isinstance(source, str) and len(source) > 1000:
+            img_bytes = base64.b64decode(source)
+            img = Image.open(BytesIO(img_bytes))
+            return img
+
+        # ✅ Case 2: URL image
+        elif str(source).startswith("http"):
             response = requests.get(source)
             img = Image.open(BytesIO(response.content))
             return img
 
-        # ✅ Case 2: TIF file
+        # ✅ Case 3: TIF file
         elif str(source).endswith(".tif"):
             with rasterio.open(source) as src:
-                img = src.read([1, 2, 3])
-                img = np.transpose(img, (1, 2, 0))
+                red = src.read(4)
+                green = src.read(3)
+                blue = src.read(2)
 
-                img = img.astype(float)
-                img = (img - img.min()) / (img.max() - img.min())
+                red = red / 10000
+                green = green / 10000
+                blue = blue / 10000
 
-                return img
+                rgb = np.stack([red, green, blue], axis=-1)
+                rgb = (rgb - np.min(rgb)) / (np.max(rgb) - np.min(rgb))
 
-        # ✅ Case 3: Normal image file
+                return rgb
+
+        # ✅ Case 4: Normal image file
         else:
             return Image.open(source)
 
