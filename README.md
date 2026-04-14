@@ -1,60 +1,51 @@
-# 🌳 Live Deforestation Monitoring & Permit Verification System
+# Setup Guide
 
-## 🚀 Project Setup Guide
-
-Follow these steps to run the project locally.
-
----
-
-# 📥 1. Clone Repository
-
-```bash
-git clone https://github.com/your-username/FinalYearProject.git
+## 1. Clone the Repository
+git clone https://github.com/SHREYA-NAVALE/FinalYearProject.git  
 cd FinalYearProject
-```
 
 ---
 
-# 🧱 2. Setup Backend
+## 2. Backend Setup (FastAPI)
 
-```bash
-cd backend
+cd backend  
+python -m venv venv  
+venv\Scripts\activate  
 
-# Create virtual environment
-python -m venv venv
+pip install -r requirements.txt  
 
-# Activate
-# Windows:
-venv\Scripts\activate
+Run backend:
+uvicorn main:app --reload  
 
-# Install dependencies
-pip install -r requirements.txt
-```
+Backend URL: http://127.0.0.1:8000  
+Swagger Docs: http://127.0.0.1:8000/docs  
 
 ---
 
-# 🗄️ 3. Setup PostgreSQL + PostGIS
+## 3. Frontend Setup (Streamlit)
 
-## Install:
+cd frontend  
+python -m venv venv  
+venv\Scripts\activate  
 
-* PostgreSQL 16
-* PostGIS 3.4
+pip install -r requirements.txt  
 
-## Create Database:
+Run frontend:
+streamlit run app.py  
 
-```sql
-CREATE DATABASE FinalYearProject;
-```
+Frontend URL: http://localhost:8501  
 
-## Enable PostGIS:
+---
 
-```sql
+## 4. Database Setup (PostgreSQL + PostGIS)
+
+Open pgAdmin and create a database named:
+FinalYearProject  
+
+Run the following queries:
+
 CREATE EXTENSION postgis;
-```
 
-## Create Tables:
-
-```sql
 CREATE TABLE permits (
     permit_id VARCHAR(50) PRIMARY KEY,
     geometry GEOMETRY(POLYGON, 4326),
@@ -69,109 +60,58 @@ CREATE TABLE permits (
 CREATE TABLE detected_deforestation (
     detection_id SERIAL PRIMARY KEY,
     geometry GEOMETRY(POLYGON, 4326),
-    centroid GEOMETRY(POINT, 4326)
-        GENERATED ALWAYS AS (ST_Centroid(geometry)) STORED,
+    centroid GEOMETRY(POINT, 4326),
     detected_at DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-```
 
 ---
 
-# ⚙️ 4. Configure Backend DB Connection
+## 5. AWS Setup (Image Fetching Module)
 
-Edit:
+- Get the .pem key file from your team
+- Save it on your system
+- Update path in:
 
-```bash
-backend/db.py
-```
+backend/services/image_fetch.py
 
-Update:
-
-```python
-conn = psycopg2.connect(
-    dbname="FinalYearProject",
-    user="postgres",
-    password="YOUR_PASSWORD",
-    host="localhost",
-    port="5433"
-)
-```
+Example:
+KEY = "C:/Users/YourName/Downloads/s2dr3-keypair.pem"
 
 ---
 
-# ▶️ 5. Run Backend
+## 6. Run the Full System
 
-```bash
-cd backend
-uvicorn main:app --reload
-```
+Step 1: Start Backend  
+cd backend  
+venv\Scripts\activate  
+uvicorn main:app --reload  
 
-API Docs:
+Step 2: Start Frontend  
+cd frontend  
+venv\Scripts\activate  
+streamlit run app.py  
 
-```
-http://127.0.0.1:8000/docs
-```
+Step 3: Open browser  
+http://localhost:8501  
 
----
-
-# 🎨 6. Setup Frontend
-
-```bash
-cd frontend
-
-# Create virtual environment
-python -m venv venv
-
-# Activate
-venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
+Step 4: Select area and click "Analyze"  
 
 ---
 
-# ▶️ 7. Run Frontend
+## Notes
 
-```bash
-streamlit run app.py
-```
-
----
-
-# 🧪 8. Test System
-
-1. Open frontend
-2. Go to Analytics
-3. Click Analyze
-4. Check database:
-
-```sql
-SELECT * FROM detected_deforestation;
-```
+- Do not upload .pem file to GitHub  
+- Do not upload .tif files  
+- Make sure AWS instance is running before analysis  
+- Ensure database connection is configured correctly  
 
 ---
 
-# 🔥 Features
+## Team Usage
 
-* Satellite-based deforestation detection
-* Permit validation using geospatial data
-* PostGIS spatial queries
-* Interactive dashboard (Streamlit)
+Install dependencies:
+pip install -r requirements.txt  
 
----
-
-# 👥 Team Notes
-
-* Backend → FastAPI
-* Frontend → Streamlit
-* Database → PostgreSQL + PostGIS
-
----
-
-# 🚀 Future Work
-
-* Integrate real satellite images
-* Add ML-based detection model
-* Implement ST_Intersects for illegal detection
+Pull latest code:
+git pull origin main  
